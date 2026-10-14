@@ -17,7 +17,6 @@ export function Dashboard() {
   const [cat, setCat] = useState<Category>('groceries')
   const [amount, setAmount] = useState('')
   const [desc, setDesc] = useState('')
-  const [shared, setShared] = useState(true)
   const [date, setDate] = useState(today())
 
   function today() {
@@ -47,7 +46,6 @@ export function Dashboard() {
       amount: amt,
       category: cat,
       description: desc,
-      shared,
     })
     setBusy(false)
     if (!error) {
@@ -64,8 +62,6 @@ export function Dashboard() {
 
   // ---------- computed totals ----------
   const total = rows?.reduce((s, r) => s + r.amount, 0) ?? 0
-  const sharedTotal = rows?.filter(r => r.shared).reduce((s, r) => s + r.amount, 0) ?? 0
-  const myShare = sharedTotal / 2
 
   const byCat: { key: Category; amount: number }[] =
     CATEGORIES.map(c => {
@@ -91,7 +87,6 @@ export function Dashboard() {
       <div className="cards">
         <div className="card"><span className="num">{fmt(total)}</span><span className="lbl">all-time</span></div>
         <div className="card"><span className="num">{fmt(currentMonth)}</span><span className="lbl">this month</span></div>
-        <div className="card"><span className="num">{fmt(myShare)}</span><span className="lbl">your half of shared 💛</span></div>
       </div>
 
       <div className="add">
@@ -117,10 +112,6 @@ export function Dashboard() {
         <input type="text" placeholder="what was it? (e.g. weekly shop)" value={desc}
           onChange={e => setDesc(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') add() }} />
-        <label className="tog">
-          <input type="checkbox" checked={shared} onChange={e => setShared(e.target.checked)} />
-          split 50/50 with bae
-        </label>
         <button onClick={add} disabled={busy || !amount}>{busy ? '…' : 'Add'}</button>
       </div>
 
@@ -147,9 +138,7 @@ export function Dashboard() {
             <div key={r.id} className="entry">
               <span className="e">{catEmoji(r.category)}</span>
               <div className="mid">
-                <div className="t">{r.description || catLabel(r.category)}
-                  {r.shared && <span className="badge split">split</span>}
-                </div>
+                <div className="t">{r.description || catLabel(r.category)}</div>
                 <div className="m">
                   {MONTHS[d.getMonth()]} {d.getDate()} · {r.added_name || 'someone'}
                 </div>

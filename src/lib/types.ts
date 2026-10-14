@@ -17,7 +17,6 @@ export interface Spending {
   amount: number
   category: Category
   description: string
-  shared: boolean
   created_at: string
 }
 
